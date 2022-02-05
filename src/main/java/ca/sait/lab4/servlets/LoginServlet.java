@@ -1,12 +1,14 @@
 
 package ca.sait.lab4.servlets;
 
+import ca.sait.lab4.models.User;
+import ca.sait.lab4.services.AccountService;
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -28,11 +30,23 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String query = request.getQueryString();
+        HttpSession session = request.getSession();
 
-        if (query != null && query.contains("logout")) {
+     
+            String query = request.getQueryString();
+
+                if (query != null && query.contains("logout")) {
+                    session.invalidate();
+                    request.setAttribute("message", "You are logged out");
+                } else {
+                    response.sendRedirect("home");
+                    return;
+                }
+
+            
         
-        }
+
+      
 
 
         getServletContext().getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
@@ -59,6 +73,20 @@ public class LoginServlet extends HttpServlet {
         
         } else {
         
+            AccountService account = new AccountService();
+
+            User user = account.login(username, password);  
+
+            if (user != null) {
+            
+                request.getSession().setAttribute("username", username);
+
+                response.sendRedirect("home");
+                return;
+            } else {
+                request.setAttribute("username", username);
+                request.setAttribute("message", "Incorrect username/password");
+            }
         }
 
         getServletContext().getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
