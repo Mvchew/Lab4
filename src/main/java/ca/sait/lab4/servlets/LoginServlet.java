@@ -32,7 +32,8 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession();
 
-     
+        if (session.getAttribute("username") != null) {     
+
             String query = request.getQueryString();
 
                 if (query != null && query.contains("logout")) {
@@ -43,7 +44,7 @@ public class LoginServlet extends HttpServlet {
                     return;
                 }
 
-            
+        }
         
 
       
